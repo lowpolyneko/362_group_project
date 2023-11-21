@@ -173,31 +173,31 @@ void loop()
 
 
     //Check if ball has collided
-    if(ballY > 6)
+    if((int)ballY > 6)
     {
       ballYSpeed = -ballYSpeed;
-      ballY -= 1;
+      ballY = 6;
     }
-    else if(ballY < 1 &&
+    else if((int)ballY < 1 &&
            (!playerTwoAlive ||
-           (ballX > playerTwoBlockerPos && ballX < playerTwoBlockerPos + 1)))
+           ((int)ballX > playerTwoBlockerPos && (int)ballX < playerTwoBlockerPos + 1)))
     {
       ballYSpeed = -ballYSpeed;
-      ballY += 1;
+      ballY = 1;
     }
-    if(ballX < 1 &&
+    if((int)ballX < 1 &&
       (!playerOneAlive ||
-      (ballY > playerOneBlockerPos && ballY < playerOneBlockerPos + 1)))
+      ((int)ballY > playerOneBlockerPos && (int)ballY < playerOneBlockerPos + 1)))
     {
       ballXSpeed = -ballXSpeed;
-      ballX += 1;
+      ballX = 1;
     }
-    else if(ballX > 6 &&
+    else if((int)ballX > 6 &&
            (!playerThreeAlive ||
-           (ballY > playerThreeBlockerPos && ballY < playerThreeBlockerPos + 1)))
+           ((int)ballY > playerThreeBlockerPos && (int)ballY < playerThreeBlockerPos + 1)))
     {
       ballXSpeed = -ballXSpeed;
-      ballX -= 1;
+      ballX = 6;
     }
 
 
