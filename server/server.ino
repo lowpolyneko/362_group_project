@@ -121,6 +121,7 @@ void loop()
 {
   bool updFlag = false;
 
+  p1Serial.listen();
   if (p1Serial.available() > 0) {
     switch(p1Serial.read()) {
       case 'r':
@@ -135,6 +136,7 @@ void loop()
     updFlag = true;
   }
 
+  p2Serial.listen();
   if (p2Serial.available() > 0) {
     switch(p2Serial.read()) {
       case 'r':
@@ -149,6 +151,7 @@ void loop()
     updFlag = true;
   }
 
+  p3Serial.listen();
   if (p3Serial.available() > 0) {
     switch(p3Serial.read()) {
       case 'r':
