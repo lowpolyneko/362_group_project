@@ -1,8 +1,12 @@
 #define startingLives 5
 #define ballUpdateFrequency 500
 #define blockUpdateFrequency 1000
-#define p3TX 2 // p1 is hardware, so 0 and 1, and p2 is 8 and 9 hardcoded cus of altsoftserial
-#define p3RX 3
+#define p1TX 2
+#define p1RX 3
+#define p2TX 4
+#define p2RX 5
+#define p3TX 6
+#define p3RX 7
 #define resetButtonPin 12
 #define maxRight 5
 #define maxLeft 1
@@ -10,15 +14,15 @@
 
 #include <LedControl.h>
 #include <SoftwareSerial.h>
-#include <AltSoftSerial.h>
 
-#define DIN 5
-#define CS  6
-#define CLK 7
+#define DIN 8
+#define CS  9
+#define CLK 10
 
 LedControl lc = LedControl(DIN, CLK, CS,0);
 
-AltSoftSerial  p2Serial;
+SoftwareSerial p1Serial(p1RX, p1TX);
+SoftwareSerial p2Serial(p2RX, p2TX);
 SoftwareSerial p3Serial(p3RX, p3TX);
 
 int playerOneLives;
@@ -53,7 +57,7 @@ void resetLives()
   playerOneLives = startingLives;
   playerTwoLives = startingLives;
   playerThreeLives = startingLives;
-  Serial.write(startingLives);
+  p1Serial.write(startingLives);
   p2Serial.write(startingLives);
   p3Serial.write(startingLives);
 }
@@ -107,7 +111,7 @@ void setup()
   resetBall();
   resetLives();
 
-  Serial.begin(9600);
+  p1Serial.begin(9600);
   p2Serial.begin(9600);
   p3Serial.begin(9600);
 }
@@ -117,8 +121,9 @@ void loop()
 {
   bool updFlag = false;
 
-  if (Serial.available() > 0) {
-    switch(Serial.read()) {
+  p1Serial.listen();
+  if (p1Serial.available() > 0) {
+    switch(p1Serial.read()) {
       case 'r':
         if(playerOneBlockerPos < maxRight)
           playerOneBlockerPos += 1;
@@ -131,6 +136,7 @@ void loop()
     updFlag = true;
   }
 
+  p2Serial.listen();
   if (p2Serial.available() > 0) {
     switch(p2Serial.read()) {
       case 'r':
@@ -145,6 +151,7 @@ void loop()
     updFlag = true;
   }
 
+  p3Serial.listen();
   if (p3Serial.available() > 0) {
     switch(p3Serial.read()) {
       case 'r':
@@ -184,7 +191,7 @@ void loop()
     if(ballX < 0)
     {
       playerOneLives -= 1;
-      Serial.write(playerOneLives);
+      p1Serial.write(playerOneLives);
       resetBall();
       if(playerOneLives < 1)
         playerOneAlive = false;
