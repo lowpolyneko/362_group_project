@@ -1,27 +1,29 @@
-#define playerOneCode 0
-#define playerTwoCode 1
-#define playerThreeCode 2
 #define startingLives 5
 #define ballUpdateFrequency 500
 #define blockUpdateFrequency 1000
-#define playerOneLeftMovePin 2
-#define playerOneRightMovePin 3
-#define playerTwoLeftMovePin 4
-#define playerTwoRightMovePin 5
-#define playerThreeLeftMovePin 6
-#define playerThreeRightMovePin 7
+#define p1TX 2
+#define p1RX 3
+#define p2TX 4
+#define p2RX 5
+#define p3TX 6
+#define p3RX 7
 #define resetButtonPin 12
 #define maxRight 5
 #define maxLeft 1
 #define resetDely 2000
 
 #include <LedControl.h>
+#include <SoftwareSerial.h>
 
-int DIN = 8;
-int CS  = 9;
-int CLK = 10;
+#define DIN = 8;
+#define CS  = 9;
+#define CLK = 10;
 
 LedControl lc = LedControl(DIN, CLK, CS,0);
+
+SoftwareSerial p1Serial(p1RX, p1TX);
+SoftwareSerial p2Serial(p2RX, p2TX);
+SoftwareSerial p3Serial(p3RX, p3TX);
 
 int playerOneLives;
 int playerTwoLives;
@@ -33,7 +35,6 @@ int playerOneBlockerPos = 3;
 int playerTwoBlockerPos = 3;
 int playerThreeBlockerPos = 3;
 int nextBallUpdate = resetDely;
-int nextBlockerUpdate = resetDely;
 float ballX;
 float ballY;
 float ballXSpeed;
@@ -56,9 +57,9 @@ void resetLives()
   playerOneLives = startingLives;
   playerTwoLives = startingLives;
   playerThreeLives = startingLives;
-  Serial.write(16 * playerOneCode + startingLives);
-  Serial.write(16 * playerTwoCode + startingLives);
-  Serial.write(16 * playerThreeCode + startingLives);
+  p1Serial.write(startingLives);
+  p2Serial.write(startingLives);
+  p3Serial.write(startingLives);
 }
 
 
@@ -66,7 +67,7 @@ void updateDisplay()
 {
   // "player 4" or the empty row
   lc.setColumn(0, 7, 0b11111111);
-  
+
   // player 1
   if (playerOneAlive)
     lc.setRow(0, 0, (0b11 << playerOneBlockerPos) | 0b1);
@@ -89,7 +90,7 @@ void updateDisplay()
   for (int x = 1; x < 7; ++x)
     for (int y = 1; y < 7; ++y)
       lc.setLed(0, x, y, false);
-      
+
   lc.setLed(0, ballX, ballY, true);
 }
 
@@ -103,37 +104,67 @@ void setup()
 
   for (int i = 2; i <= 7; i++)
   {
-    pinMode(i, INPUT);
+    pinMode(i, (i % 2) ? INPUT : OUTPUT);
   }
+
   pinMode(resetButtonPin, INPUT);
   resetBall();
   resetLives();
-  Serial.begin(9600);
+
+  p1Serial.begin(9600);
+  p2Serial.begin(9600);
+  p3Serial.begin(9600);
 }
 
 
 void loop()
 {
-  if(millis() >= nextBlockerUpdate)
-  {
-  nextBlockerUpdate += blockUpdateFrequency;
-  //Update blocker position
-  if(digitalRead(playerOneLeftMovePin) == HIGH && playerOneBlockerPos < maxRight)
-    playerOneBlockerPos += 1;
-  if(digitalRead(playerOneRightMovePin) == HIGH && playerOneBlockerPos > maxLeft)
-    playerOneBlockerPos -= 1;
-  if(digitalRead(playerTwoLeftMovePin) == HIGH && playerTwoBlockerPos < maxRight)
-    playerTwoBlockerPos += 1;
-  if(digitalRead(playerTwoRightMovePin) == HIGH && playerTwoBlockerPos > maxLeft)
-    playerTwoBlockerPos -= 1;
-  if(digitalRead(playerThreeLeftMovePin) == HIGH && playerThreeBlockerPos < maxRight)
-    playerThreeBlockerPos += 1;
-  if(digitalRead(playerThreeRightMovePin) == HIGH && playerThreeBlockerPos > maxLeft)
-    playerThreeBlockerPos -= 1;
+  bool updFlag = false;
 
-    updateDisplay();
+  if (p1Serial.available() > 0) {
+    switch(p1Serial.read()) {
+      case 'r':
+        if(playerOneBlockerPos < maxRight)
+          playerOneBlockerPos += 1;
+        break;
+      case 'l':
+        if(playerOneBlockerPos > maxLeft)
+          playerOneBlockerPos -= 1;
+    }
+
+    updFlag = true;
   }
 
+  if (p2Serial.available() > 0) {
+    switch(p2Serial.read()) {
+      case 'r':
+        if(playerTwoBlockerPos < maxRight)
+          playerTwoBlockerPos += 1;
+        break;
+      case 'l':
+        if(playerTwoBlockerPos > maxLeft)
+          playerTwoBlockerPos -= 1;
+    }
+
+    updFlag = true;
+  }
+
+  if (p3Serial.available() > 0) {
+    switch(p3Serial.read()) {
+      case 'r':
+        if(playerThreeBlockerPos < maxRight)
+          playerThreeBlockerPos += 1;
+        break;
+      case 'l':
+        if(playerThreeBlockerPos > maxLeft)
+          playerThreeBlockerPos -= 1;
+    }
+
+    updFlag = true;
+  }
+
+  if (updFlag)
+    updateDisplay();
 
   if(millis() >= nextBallUpdate)
   {
@@ -147,7 +178,7 @@ void loop()
     if(ballY < 0)
     {
       playerTwoLives -= 1;
-      Serial.write(16 * playerTwoCode + playerTwoLives);
+      p2Serial.write(playerTwoLives);
       resetBall();
       if(playerTwoLives < 1)
         playerTwoAlive = false;
@@ -157,7 +188,7 @@ void loop()
     if(ballX < 0)
     {
       playerOneLives -= 1;
-      Serial.write(16 * playerOneCode + playerOneLives);
+      p1Serial.write(playerOneLives);
       resetBall();
       if(playerOneLives < 1)
         playerOneAlive = false;
@@ -165,7 +196,7 @@ void loop()
     else if(ballX > 7)
     {
       playerThreeLives -= 1;
-      Serial.write(16 * playerThreeCode + playerThreeLives);
+      p3Serial.write(playerThreeLives);
       resetBall();
       if(playerThreeLives < 1)
         playerThreeAlive = false;
@@ -179,22 +210,22 @@ void loop()
       ballY = 6;
     }
     else if((int)ballY < 1 &&
-           (!playerTwoAlive ||
-           ((int)ballX > playerTwoBlockerPos && (int)ballX < playerTwoBlockerPos + 1)))
+        (!playerTwoAlive ||
+         ((int)ballX > playerTwoBlockerPos && (int)ballX < playerTwoBlockerPos + 1)))
     {
       ballYSpeed = -ballYSpeed;
       ballY = 1;
     }
     if((int)ballX < 1 &&
-      (!playerOneAlive ||
-      ((int)ballY > playerOneBlockerPos && (int)ballY < playerOneBlockerPos + 1)))
+        (!playerOneAlive ||
+         ((int)ballY > playerOneBlockerPos && (int)ballY < playerOneBlockerPos + 1)))
     {
       ballXSpeed = -ballXSpeed;
       ballX = 1;
     }
     else if((int)ballX > 6 &&
-           (!playerThreeAlive ||
-           ((int)ballY > playerThreeBlockerPos && (int)ballY < playerThreeBlockerPos + 1)))
+        (!playerThreeAlive ||
+         ((int)ballY > playerThreeBlockerPos && (int)ballY < playerThreeBlockerPos + 1)))
     {
       ballXSpeed = -ballXSpeed;
       ballX = 6;
@@ -203,13 +234,12 @@ void loop()
 
     updateDisplay();
   }
-  
+
   if(digitalRead(resetButtonPin) == HIGH)
   {
     delay(resetDely);
     nextBallUpdate = millis() + resetDely;
-    nextBlockerUpdate = nextBallUpdate;
-    
+
     playerOneBlockerPos = 3;
     playerTwoBlockerPos = 3;
     playerThreeBlockerPos = 3;
@@ -217,3 +247,5 @@ void loop()
     resetBall();
   }
 }
+
+// vim: set ts=2 sw=2 expandtab:
