@@ -1,6 +1,5 @@
 #define startingLives 5
-#define ballUpdateFrequency 500
-#define blockUpdateFrequency 1000
+#define ballUpdateFrequency 1000
 #define resetButtonPin 12
 #define maxRight 5
 #define maxLeft 1
@@ -96,6 +95,8 @@ void setup()
   Serial3.begin(9600);
   
   pinMode(resetButtonPin, INPUT);
+
+  delay(resetDely);
   resetBall();
   resetLives();
 }
