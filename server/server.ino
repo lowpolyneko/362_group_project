@@ -35,6 +35,8 @@ int playerOneBlockerPos = 3;
 int playerTwoBlockerPos = 3;
 int playerThreeBlockerPos = 3;
 int nextBallUpdate = resetDely;
+int nextBlockUpdate = resetDely;
+int currentlyListening = 0;
 float ballX;
 float ballY;
 float ballXSpeed;
@@ -119,9 +121,23 @@ void setup()
 
 void loop()
 {
-  bool updFlag = false;
+  if(millis() >= nextBlockUpdate)
+  {
+    nextBlockUpdate += blockUpdateFrequency;
+    currentlyListening = (currentlyListening + 1) % 3;
 
-  p1Serial.listen();
+    switch (currentlyListening) {
+      case 0:
+        p1Serial.listen();
+        break;
+      case 1:
+        p2Serial.listen();
+        break;
+      case 2:
+        p3Serial.listen();
+    }
+  }
+
   if (p1Serial.available() > 0) {
     switch(p1Serial.read()) {
       case 'r':
@@ -133,10 +149,9 @@ void loop()
           playerOneBlockerPos -= 1;
     }
 
-    updFlag = true;
+    updateDisplay();
   }
 
-  p2Serial.listen();
   if (p2Serial.available() > 0) {
     switch(p2Serial.read()) {
       case 'r':
@@ -148,10 +163,9 @@ void loop()
           playerTwoBlockerPos -= 1;
     }
 
-    updFlag = true;
+    updateDisplay();
   }
 
-  p3Serial.listen();
   if (p3Serial.available() > 0) {
     switch(p3Serial.read()) {
       case 'r':
@@ -163,11 +177,8 @@ void loop()
           playerThreeBlockerPos -= 1;
     }
 
-    updFlag = true;
-  }
-
-  if (updFlag)
     updateDisplay();
+  }
 
   if(millis() >= nextBallUpdate)
   {
@@ -242,6 +253,7 @@ void loop()
   {
     delay(resetDely);
     nextBallUpdate = millis() + resetDely;
+    nextBlockUpdate = nextBallUpdate;
 
     playerOneBlockerPos = 3;
     playerTwoBlockerPos = 3;
