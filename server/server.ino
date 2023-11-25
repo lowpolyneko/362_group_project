@@ -155,8 +155,8 @@ void loop()
   {
     nextBallUpdate += ballUpdateFrequency;
     //Update ball position
-    ballX += ballYSpeed;
-    ballY += ballXSpeed;
+    ballY += ballYSpeed;
+    ballX += ballXSpeed;
 
 
     //Check if ball is out of bounds
