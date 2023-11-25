@@ -1,29 +1,18 @@
 #define startingLives 5
 #define ballUpdateFrequency 500
 #define blockUpdateFrequency 1000
-#define p1TX 2
-#define p1RX 3
-#define p2TX 4
-#define p2RX 5
-#define p3TX 6
-#define p3RX 7
 #define resetButtonPin 12
 #define maxRight 5
 #define maxLeft 1
 #define resetDely 2000
 
 #include <LedControl.h>
-#include <SoftwareSerial.h>
 
 #define DIN 8
 #define CS  9
 #define CLK 10
 
 LedControl lc = LedControl(DIN, CLK, CS,0);
-
-SoftwareSerial p1Serial(p1RX, p1TX);
-SoftwareSerial p2Serial(p2RX, p2TX);
-SoftwareSerial p3Serial(p3RX, p3TX);
 
 int playerOneLives;
 int playerTwoLives;
@@ -57,9 +46,9 @@ void resetLives()
   playerOneLives = startingLives;
   playerTwoLives = startingLives;
   playerThreeLives = startingLives;
-  p1Serial.write(startingLives);
-  p2Serial.write(startingLives);
-  p3Serial.write(startingLives);
+  Serial1.write(startingLives);
+  Serial2.write(startingLives);
+  Serial3.write(startingLives);
 }
 
 
@@ -102,18 +91,13 @@ void setup()
   lc.setIntensity(0,0);
   lc.clearDisplay(0);
 
-  for (int i = 2; i <= 7; i++)
-  {
-    pinMode(i, (i % 2) ? INPUT : OUTPUT);
-  }
-
+  Serial1.begin(9600);
+  Serial2.begin(9600);
+  Serial3.begin(9600);
+  
   pinMode(resetButtonPin, INPUT);
   resetBall();
   resetLives();
-
-  p1Serial.begin(9600);
-  p2Serial.begin(9600);
-  p3Serial.begin(9600);
 }
 
 
@@ -121,9 +105,8 @@ void loop()
 {
   bool updFlag = false;
 
-  p1Serial.listen();
-  if (p1Serial.available() > 0) {
-    switch(p1Serial.read()) {
+  if (Serial1.available() > 0) {
+    switch(Serial1.read()) {
       case 'r':
         if(playerOneBlockerPos < maxRight)
           playerOneBlockerPos += 1;
@@ -136,9 +119,8 @@ void loop()
     updFlag = true;
   }
 
-  p2Serial.listen();
-  if (p2Serial.available() > 0) {
-    switch(p2Serial.read()) {
+  if (Serial2.available() > 0) {
+    switch(Serial2.read()) {
       case 'r':
         if(playerTwoBlockerPos < maxRight)
           playerTwoBlockerPos += 1;
@@ -151,9 +133,8 @@ void loop()
     updFlag = true;
   }
 
-  p3Serial.listen();
-  if (p3Serial.available() > 0) {
-    switch(p3Serial.read()) {
+  if (Serial3.available() > 0) {
+    switch(Serial3.read()) {
       case 'r':
         if(playerThreeBlockerPos < maxRight)
           playerThreeBlockerPos += 1;
@@ -181,7 +162,7 @@ void loop()
     if(ballY < 0)
     {
       playerTwoLives -= 1;
-      p2Serial.write(playerTwoLives);
+      Serial2.write(playerTwoLives);
       resetBall();
       if(playerTwoLives < 1)
         playerTwoAlive = false;
@@ -191,7 +172,7 @@ void loop()
     if(ballX < 0)
     {
       playerOneLives -= 1;
-      p1Serial.write(playerOneLives);
+      Serial1.write(playerOneLives);
       resetBall();
       if(playerOneLives < 1)
         playerOneAlive = false;
@@ -199,7 +180,7 @@ void loop()
     else if(ballX > 7)
     {
       playerThreeLives -= 1;
-      p3Serial.write(playerThreeLives);
+      Serial3.write(playerThreeLives);
       resetBall();
       if(playerThreeLives < 1)
         playerThreeAlive = false;
