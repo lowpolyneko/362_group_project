@@ -26,7 +26,7 @@ void setup() {
 
 void loop() {
 
-  if(currentLives > -1)
+  if(currentLives > 0)
   {
     if(millis() >= nextUpdate)
     {
