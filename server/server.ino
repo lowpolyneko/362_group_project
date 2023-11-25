@@ -15,9 +15,9 @@
 #include <LedControl.h>
 #include <SoftwareSerial.h>
 
-#define DIN = 8;
-#define CS  = 9;
-#define CLK = 10;
+#define DIN 8
+#define CS  9
+#define CLK 10
 
 LedControl lc = LedControl(DIN, CLK, CS,0);
 
