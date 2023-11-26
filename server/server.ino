@@ -23,20 +23,22 @@ int playerOneBlockerPos = 3;
 int playerTwoBlockerPos = 3;
 int playerThreeBlockerPos = 3;
 int nextBallUpdate = resetDely;
-float ballX;
-float ballY;
-float ballXSpeed;
-float ballYSpeed;
+int ballX, ballY;
+int ballXSpeed, ballYSpeed;
 
 
 void resetBall()
 {
-  ballX = 3.5;
-  ballY = 3.5;
-  long LongBallDirection = random(0, 6283);
-  double ballDirection = (double)LongBallDirection / 1000.0;
-  ballXSpeed = cos(ballDirection);
-  ballYSpeed = sin(ballDirection);
+  ballX = 3;
+  ballY = 4;
+  ballXSpeed = random(0,1);
+  if(ballXSpeed == 0 ){
+    ballXSpeed = -1;
+  }
+  ballYSpeed = random(0,1);
+  if(ballYSpeed == 0 ){
+    ballYSpeed = -1;
+  }
 }
 
 
@@ -53,7 +55,7 @@ void resetLives()
 
 void updateDisplay()
 {
-  // "player 4" or the empty row
+  // set "player 4" or the empty row as full lights
   lc.setColumn(0, 7, 0b11111111);
 
   // player 1
@@ -151,6 +153,7 @@ void loop()
   if (updFlag)
     updateDisplay();
 
+  // updates position
   if(millis() >= nextBallUpdate)
   {
     nextBallUpdate += ballUpdateFrequency;
@@ -169,7 +172,6 @@ void loop()
         playerTwoAlive = false;
     }
 
-
     if(ballX < 0)
     {
       playerOneLives -= 1;
@@ -187,36 +189,30 @@ void loop()
         playerThreeAlive = false;
     }
 
-
     //Check if ball has collided
-    if((int)ballY > 6)
+    if(ballY >= 6)
     {
       ballYSpeed = -ballYSpeed;
       ballY = 6;
     }
-    else if((int)ballY < 1 &&
-        (!playerTwoAlive ||
-         ((int)ballX > playerTwoBlockerPos && (int)ballX < playerTwoBlockerPos + 1)))
+    else if(ballY <= 1 &&
+    (!playerTwoAlive || (ballX >= playerTwoBlockerPos && ballX <= playerTwoBlockerPos + 1))) //P2 is dead or the ball is colliding with P2's paddle
     {
       ballYSpeed = -ballYSpeed;
       ballY = 1;
     }
-    if((int)ballX < 1 &&
-        (!playerOneAlive ||
-         ((int)ballY > playerOneBlockerPos && (int)ballY < playerOneBlockerPos + 1)))
+    if(ballX <= 1 &&
+    (!playerOneAlive || (ballY >= playerOneBlockerPos && ballY <= playerOneBlockerPos + 1))) //P1 is dead or the ball is colliding with P1's paddle
     {
       ballXSpeed = -ballXSpeed;
       ballX = 1;
     }
-    else if((int)ballX > 6 &&
-        (!playerThreeAlive ||
-         ((int)ballY > playerThreeBlockerPos && (int)ballY < playerThreeBlockerPos + 1)))
+    else if(ballX >= 6 &&
+    (!playerThreeAlive || (ballY >= playerThreeBlockerPos && ballY <= playerThreeBlockerPos + 1))) //P3 is dead or the ball is colliding with P3's paddle
     {
       ballXSpeed = -ballXSpeed;
       ballX = 6;
     }
-
-
     updateDisplay();
   }
 
