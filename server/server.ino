@@ -1,5 +1,4 @@
 #define startingLives 5
-#define ballUpdateFrequency 1000
 #define resetButtonPin 12
 #define maxRight 5
 #define maxLeft 1
@@ -159,7 +158,7 @@ void loop()
   // updates position
   if(millis() >= nextBallUpdate)
   {
-    nextBallUpdate += ballUpdateFrequency;
+    nextBallUpdate += map(analogRead(A0), 0, 1023, 500, 2000);
     //Update ball position
     ballY += ballYSpeed;
     ballX += ballXSpeed;
