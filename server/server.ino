@@ -195,12 +195,14 @@ void loop()
     if(ballY >= 6)
     {
       ballYSpeed = -ballYSpeed;
+      ballXSpeed = random(-1, 2);
       ballY = 6;
     }
     else if(ballY <= 1 &&
     (!playerTwoAlive || (ballX >= playerTwoBlockerPos && ballX <= playerTwoBlockerPos + 1))) //P2 is dead or the ball is colliding with P2's paddle
     {
       ballYSpeed = -ballYSpeed;
+      ballXSpeed = random(-1, 2);
       ballY = 1;
     }
 
@@ -210,6 +212,7 @@ void loop()
       if((!playerOneAlive || (ballY >= playerOneBlockerPos && ballY <= playerOneBlockerPos + 1))) //P1 is dead or the ball is colliding with P1's paddle
       {
         ballXSpeed = -ballXSpeed;
+        ballYSpeed = random(-1, 2);
         ballX = 1;
       }
     }
@@ -219,6 +222,7 @@ void loop()
       if(!playerThreeAlive || (ballY >= playerThreeBlockerPos && ballY <= playerThreeBlockerPos + 1)) //P3 is dead or the ball is colliding with P3's paddle){
       {
         ballXSpeed = -ballXSpeed;
+        ballYSpeed = random(-1, 2);
         ballX = 6;
       }
     }
