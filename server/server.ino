@@ -191,6 +191,10 @@ void loop()
         playerThreeAlive = false;
     }
 
+    //Reset ball if it hits a corner
+    if(ballY <= 0 && (ballX >= 7 && ballY <= 0))
+      resetBall();
+
     //Check if ball has collided
     if(ballY >= 6)
     {
@@ -198,17 +202,16 @@ void loop()
       ballXSpeed = random(-1, 2);
       ballY = 6;
     }
-    else if(ballY <= 1 &&
-    (!playerTwoAlive || (ballX >= playerTwoBlockerPos && ballX <= playerTwoBlockerPos + 1))) //P2 is dead or the ball is colliding with P2's paddle
-    {
-      ballYSpeed = -ballYSpeed;
-      ballXSpeed = random(-1, 2);
-      ballY = 1;
-    }
+    else if(ballY <= 1)
+      if (!playerTwoAlive || (ballX >= playerTwoBlockerPos && ballX <= playerTwoBlockerPos + 1)) //P2 is dead or the ball is colliding with P2's paddle
+      {
+        ballYSpeed = -ballYSpeed;
+        ballXSpeed = random(-1, 2);
+        ballY = 1;
+      }
 
     if(ballX <= 1)
     {
-      Serial.write("Ball X is less than one!\n");
       if((!playerOneAlive || (ballY >= playerOneBlockerPos && ballY <= playerOneBlockerPos + 1))) //P1 is dead or the ball is colliding with P1's paddle
       {
         ballXSpeed = -ballXSpeed;
@@ -218,7 +221,6 @@ void loop()
     }
     else if(ballX >= 6)
     {
-      
       if(!playerThreeAlive || (ballY >= playerThreeBlockerPos && ballY <= playerThreeBlockerPos + 1)) //P3 is dead or the ball is colliding with P3's paddle){
       {
         ballXSpeed = -ballXSpeed;
