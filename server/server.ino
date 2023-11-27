@@ -31,11 +31,11 @@ void resetBall()
 {
   ballX = 3;
   ballY = 4;
-  ballXSpeed = random(0,1);
+  ballXSpeed = random(0,2);
   if(ballXSpeed == 0 ){
     ballXSpeed = -1;
   }
-  ballYSpeed = random(0,1);
+  ballYSpeed = random(0,2);
   if(ballYSpeed == 0 ){
     ballYSpeed = -1;
   }
@@ -91,6 +91,8 @@ void setup()
   lc.shutdown(0,false);
   lc.setIntensity(0,0);
   lc.clearDisplay(0);
+
+  randomSeed(analogRead(A5));
 
   Serial1.begin(9600);
   Serial2.begin(9600);
