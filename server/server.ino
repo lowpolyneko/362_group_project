@@ -60,19 +60,19 @@ void updateDisplay()
 
   // player 1
   if (playerOneAlive)
-    lc.setRow(0, 0, (0b11 << playerOneBlockerPos) | 0b1);
+    lc.setRow(0, 0, (0b11 << (6 - playerOneBlockerPos)) | 0b10000001);
   else
     lc.setRow(0, 0, 0b11111111);
 
   // player 2
   if (playerTwoAlive)
-    lc.setColumn(0, 0, 0b11 << playerTwoBlockerPos);
+    lc.setColumn(0, 0, 0b11 << (6 - playerTwoBlockerPos) | 0b10000001);
   else
     lc.setColumn(0, 0, 0b11111111);
 
   // player 3
   if (playerThreeAlive)
-    lc.setRow(0, 7, (0b11 << playerThreeBlockerPos) | 0b1);
+    lc.setRow(0, 7, (0b11 << (6 - playerThreeBlockerPos)) | 0b10000001);
   else
     lc.setRow(0, 0, 0b11111111);
 
