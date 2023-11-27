@@ -95,6 +95,7 @@ void setup()
   Serial1.begin(9600);
   Serial2.begin(9600);
   Serial3.begin(9600);
+  Serial.begin(9600);
   
   pinMode(resetButtonPin, INPUT);
 
@@ -201,17 +202,24 @@ void loop()
       ballYSpeed = -ballYSpeed;
       ballY = 1;
     }
-    if(ballX <= 1 &&
-    (!playerOneAlive || (ballY >= playerOneBlockerPos && ballY <= playerOneBlockerPos + 1))) //P1 is dead or the ball is colliding with P1's paddle
+
+    if(ballX <= 1)
     {
-      ballXSpeed = -ballXSpeed;
-      ballX = 1;
+      Serial.write("Ball X is less than one!\n");
+      if((!playerOneAlive || (ballY >= playerOneBlockerPos && ballY <= playerOneBlockerPos + 1))) //P1 is dead or the ball is colliding with P1's paddle
+      {
+        ballXSpeed = -ballXSpeed;
+        ballX = 1;
+      }
     }
-    else if(ballX >= 6 &&
-    (!playerThreeAlive || (ballY >= playerThreeBlockerPos && ballY <= playerThreeBlockerPos + 1))) //P3 is dead or the ball is colliding with P3's paddle
+    else if(ballX >= 6)
     {
-      ballXSpeed = -ballXSpeed;
-      ballX = 6;
+      
+      if(!playerThreeAlive || (ballY >= playerThreeBlockerPos && ballY <= playerThreeBlockerPos + 1)) //P3 is dead or the ball is colliding with P3's paddle){
+      {
+        ballXSpeed = -ballXSpeed;
+        ballX = 6;
+      }
     }
     updateDisplay();
   }
