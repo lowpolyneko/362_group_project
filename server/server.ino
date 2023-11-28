@@ -46,6 +46,9 @@ void resetLives()
   playerOneLives = startingLives;
   playerTwoLives = startingLives;
   playerThreeLives = startingLives;
+  playerOneAlive = true;
+  playerTwoAlive = true;
+  playerThreeAlive = true;
   Serial1.write(startingLives);
   Serial2.write(startingLives);
   Serial3.write(startingLives);
@@ -73,7 +76,7 @@ void updateDisplay()
   if (playerThreeAlive)
     lc.setRow(0, 7, (0b11 << (6 - playerThreeBlockerPos)) | 0b10000001);
   else
-    lc.setRow(0, 0, 0b11111111);
+    lc.setRow(0, 7, 0b11111111);
 
   // ball (clear inner columns first)
   for (int x = 1; x < 7; ++x)
