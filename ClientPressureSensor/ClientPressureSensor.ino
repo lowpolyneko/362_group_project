@@ -9,7 +9,7 @@
 #define RIGHT_CUTOFF 35
 #define LEFT_CUTOFF 100
 
-int nextUpdate = UPDATE_FREQUENCY;
+unsigned long nextUpdate = UPDATE_FREQUENCY;
 int currentLives = 0;
 SegmentDisplay segmentDisplay(4, 5, 10, 11, 9, 8, 7, 6);
 

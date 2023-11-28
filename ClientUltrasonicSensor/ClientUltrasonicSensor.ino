@@ -14,7 +14,7 @@
 #define LEFT_CUTOFF 600
 
 int currentLives = 0;
-int nextUpdate = UPDATE_FREQUENCY;
+unsigned long nextUpdate = UPDATE_FREQUENCY;
 SegmentDisplay segmentDisplay(4, 5, 10, -1, 9, 8, 7, 6);
 
 void setup() {

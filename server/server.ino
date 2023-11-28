@@ -21,7 +21,7 @@ bool playerThreeAlive = true;
 int playerOneBlockerPos = 3;
 int playerTwoBlockerPos = 3;
 int playerThreeBlockerPos = 3;
-int nextBallUpdate = resetDely;
+unsigned long nextBallUpdate = resetDely;
 int ballX, ballY;
 int ballXSpeed, ballYSpeed;
 
@@ -152,13 +152,11 @@ void loop()
     updFlag = true;
   }
 
-  if (updFlag)
-    updateDisplay();
-
   // updates position
   if(millis() >= nextBallUpdate)
   {
     nextBallUpdate += map(analogRead(A0), 0, 1023, 500, 2000);
+    
     //Update ball position
     ballY += ballYSpeed;
     ballX += ballXSpeed;
@@ -228,8 +226,12 @@ void loop()
         ballX = 6;
       }
     }
-    updateDisplay();
+    
+    updFlag = true;
   }
+
+  if (updFlag)
+    updateDisplay();
 
   if(digitalRead(resetButtonPin) == HIGH)
   {
